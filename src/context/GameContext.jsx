@@ -19,7 +19,12 @@ export function GameProvider({ children }) {
     let cancelled = false
     setLoaded(false)
     ;(async () => {
-      const data = await loadGame(uid)
+      let data = await loadGame(uid)
+      // 첫 로그인 시 클라우드가 비어있으면 로컬 저장분을 이어받는다(이후 저장 effect가 클라우드로 동기화).
+      if (!data?.character && uid) {
+        const local = await loadGame(null)
+        if (local?.character) data = local
+      }
       if (cancelled) return
       setCharacter(data?.character || newCharacter())
       setDungeons(data?.dungeons || [])
