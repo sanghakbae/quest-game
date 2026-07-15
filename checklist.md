@@ -40,3 +40,11 @@
 - [ ] Firebase 실제 연동 + Google 로그인
 - [ ] Cloudflare Pages / Firebase Hosting 배포
 - [ ] 사운드/애니메이션, 상점, 스킬 트리 등 콘텐츠 확장
+
+## 5. 턴기반 전투 (게임성 강화)
+- [x] lib/battle.js — 몬스터 생성 + 데미지/치명타 계산
+- [x] components/Battle.jsx — 공격/강공격/방어/물약 턴제 전투 UI
+- [x] Dungeon 연동 — '도전' → 전투 → 승리 시에만 보상
+- [x] 밸런스 플레이테스트: 쉬운 퀘스트 Lv.1 승리, 보스 Lv.1 참패(성장 필요)
+- [x] 패배/후퇴 경로: 보상 없음·재도전 가능 검증
+- [x] 라이브(quest.sanghak.kr) 전투 동작 확인
