@@ -1,9 +1,12 @@
-// 던전 진행 화면 — 퀘스트 카드를 나열하고 클리어를 처리한다.
+// 던전 진행 화면 — 퀘스트 카드를 나열하고, 도전 시 턴기반 전투를 연다.
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
 import { CATEGORIES } from '../lib/content'
+import { totalStats, rankInfoByName } from '../lib/game'
+import Battle from '../components/Battle'
 
-function QuestCard({ quest, dungeon, onFinish }) {
+function QuestCard({ quest, onChallenge }) {
   const cat = CATEGORIES[quest.category]
   return (
     <div className={`quest-card ${quest.done ? 'done' : ''} ${quest.isBoss ? 'boss' : ''}`}>
@@ -27,8 +30,8 @@ function QuestCard({ quest, dungeon, onFinish }) {
         {quest.done ? (
           <span className="qc-done-badge">✔ 완료</span>
         ) : (
-          <button className="btn" onClick={() => onFinish(dungeon.id, quest.id)}>
-            처치
+          <button className="btn" onClick={() => onChallenge(quest)}>
+            도전
           </button>
         )}
       </div>
@@ -38,7 +41,8 @@ function QuestCard({ quest, dungeon, onFinish }) {
 
 export default function Dungeon() {
   const { id } = useParams()
-  const { dungeons, finishQuest } = useGame()
+  const { dungeons, finishQuest, character } = useGame()
+  const [battleQuest, setBattleQuest] = useState(null)
   const dungeon = dungeons.find((d) => d.id === id)
 
   if (!dungeon) {
@@ -55,6 +59,10 @@ export default function Dungeon() {
   const total = dungeon.quests.length
   const done = dungeon.quests.filter((q) => q.done).length
   const cleared = dungeon.status === 'cleared'
+
+  const st = totalStats(character)
+  const player = { maxHp: st.maxHp, atk: st.atk, def: st.def, luck: st.luck }
+  const rankInfo = rankInfoByName(dungeon.rank)
 
   return (
     <div className="dungeon-page">
@@ -81,9 +89,19 @@ export default function Dungeon() {
 
       <div className="quest-list">
         {dungeon.quests.map((q) => (
-          <QuestCard key={q.id} quest={q} dungeon={dungeon} onFinish={finishQuest} />
+          <QuestCard key={q.id} quest={q} onChallenge={setBattleQuest} />
         ))}
       </div>
+
+      {battleQuest && (
+        <Battle
+          player={player}
+          quest={battleQuest}
+          rankInfo={rankInfo}
+          onWin={() => finishQuest(dungeon.id, battleQuest.id)}
+          onClose={() => setBattleQuest(null)}
+        />
+      )}
     </div>
   )
 }
