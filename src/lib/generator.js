@@ -3,6 +3,8 @@ import { makeRng } from './rng'
 import {
   DIFFICULTIES,
   CATEGORIES,
+  CATEGORY_LIST,
+  QUEST_NAMES,
   THEME_NAMES,
   RANKS,
   RARITIES,
@@ -113,6 +115,39 @@ export function generateScenario(checklist) {
     status: 'active',
     createdAt: Date.now(),
   }
+}
+
+// 플레이어 레벨에 맞춰 난이도 하나를 뽑는다(레벨이 높을수록 어려운 쪽으로).
+function pickDifficulty(level, rng) {
+  const r = rng.next()
+  if (level <= 2) return r < 0.5 ? '쉬움' : r < 0.85 ? '보통' : '어려움'
+  if (level <= 5) return r < 0.25 ? '쉬움' : r < 0.65 ? '보통' : r < 0.9 ? '어려움' : '극악'
+  if (level <= 9) return r < 0.35 ? '보통' : r < 0.75 ? '어려움' : '극악'
+  return r < 0.2 ? '보통' : r < 0.55 ? '어려움' : '극악'
+}
+
+// 랜덤 모험 자동 생성 — 사용자 입력 없이 판타지 퀘스트로 던전을 만든다.
+// salt로 매번 다른 결과(호출부에서 Date.now() 등을 넘긴다).
+export function generateRandomScenario(level = 1, salt = 0) {
+  const rng = makeRng(`rnd|${salt}`)
+  const theme = rng.pick(CATEGORY_LIST)
+  const count = rng.int(3, 5)
+  const usedTitles = new Set()
+
+  const items = []
+  for (let i = 0; i < count; i++) {
+    // 대부분 테마 카테고리, 가끔 다른 카테고리를 섞는다.
+    const cat = rng.chance(0.65) ? theme : rng.pick(CATEGORY_LIST)
+    const pool = QUEST_NAMES[cat]
+    let title = rng.pick(pool)
+    let guard = 0
+    while (usedTitles.has(title) && guard++ < 8) title = rng.pick(pool)
+    usedTitles.add(title)
+    items.push({ id: `${salt}_${i}`, title, category: cat, difficulty: pickDifficulty(level, rng) })
+  }
+
+  // 시드가 salt에 따라 달라지도록 이름에 salt를 섞는다(표시용 아님).
+  return generateScenario({ id: `rnd${salt}`, name: `adv-${salt}`, items })
 }
 
 // 퀘스트 하나의 전리품을 굴린다. 드랍 없으면 null.

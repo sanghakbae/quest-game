@@ -1,7 +1,8 @@
 // 본거지 — 캐릭터 시트, 인벤토리, 던전 목록을 보여주는 메인 화면.
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
 import { useAuth } from '../auth/AuthContext'
+import { generateRandomScenario } from '../lib/generator'
 import CharacterPanel from '../components/CharacterPanel'
 import Inventory from '../components/Inventory'
 
@@ -34,11 +35,18 @@ function DungeonCard({ d, onDelete }) {
 }
 
 export default function Home() {
-  const { dungeons, deleteDungeon, resetGame, configured } = useGame()
+  const { dungeons, deleteDungeon, resetGame, configured, character, addDungeon } = useGame()
   const { user, signIn, signOut } = useAuth()
+  const navigate = useNavigate()
 
   const active = dungeons.filter((d) => d.status !== 'cleared')
   const cleared = dungeons.filter((d) => d.status === 'cleared')
+
+  const startAdventure = () => {
+    const scenario = generateRandomScenario(character.level, Date.now())
+    addDungeon(scenario)
+    navigate(`/dungeon/${scenario.id}`)
+  }
 
   return (
     <div className="home">
@@ -71,16 +79,26 @@ export default function Home() {
       </div>
 
       <div className="home-right">
+        <div className="adventure-cta">
+          <div className="cta-text">
+            <h2>⚡ 모험을 떠나자</h2>
+            <p>버튼 하나로 새로운 던전이 생성됩니다. Lv.{character.level}에 맞는 위험이 기다립니다.</p>
+          </div>
+          <button className="btn big-cta" onClick={startAdventure}>
+            🗺️ 랜덤 모험 떠나기
+          </button>
+        </div>
+
         <div className="section-head">
           <h2>진행 중인 던전</h2>
-          <Link to="/create" className="btn">
-            + 새 던전 생성
+          <Link to="/create" className="btn ghost">
+            직접 만들기
           </Link>
         </div>
         {active.length === 0 ? (
           <div className="panel empty-big">
             <p>진행 중인 던전이 없습니다.</p>
-            <p className="empty-hint">체크리스트를 작성해 새 던전을 생성하세요.</p>
+            <p className="empty-hint">위 "랜덤 모험 떠나기"로 바로 시작하세요.</p>
           </div>
         ) : (
           <div className="dungeon-list">
