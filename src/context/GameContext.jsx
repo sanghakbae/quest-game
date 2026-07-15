@@ -18,12 +18,26 @@ export function GameProvider({ children }) {
   useEffect(() => {
     let cancelled = false
     setLoaded(false)
+    // Firestore 읽기가 실패하거나(미설정/권한) 응답이 없어도 로딩이 멈추지 않도록 타임아웃을 건다.
+    const withTimeout = (p, ms) =>
+      Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))])
     ;(async () => {
-      let data = await loadGame(uid)
-      // 첫 로그인 시 클라우드가 비어있으면 로컬 저장분을 이어받는다(이후 저장 effect가 클라우드로 동기화).
-      if (!data?.character && uid) {
-        const local = await loadGame(null)
-        if (local?.character) data = local
+      let data = null
+      try {
+        data = await withTimeout(loadGame(uid), 6000)
+        // 첫 로그인 시 클라우드가 비어있으면 로컬 저장분을 이어받는다(이후 저장 effect가 클라우드로 동기화).
+        if (!data?.character && uid) {
+          const local = await loadGame(null)
+          if (local?.character) data = local
+        }
+      } catch (e) {
+        // 클라우드 로드 실패/지연 → 로컬 저장분으로 폴백해 게임을 계속할 수 있게 한다.
+        console.warn('클라우드 로드 실패, 로컬 저장으로 폴백합니다.', e)
+        try {
+          data = await loadGame(null)
+        } catch {
+          data = null
+        }
       }
       if (cancelled) return
       setCharacter(data?.character || newCharacter())
