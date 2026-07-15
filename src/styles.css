@@ -1,0 +1,744 @@
+/* 체크리스트 던전 전역 스타일 — 다크 판타지 테마 */
+:root {
+  --bg: #0e0f1a;
+  --bg2: #16182a;
+  --panel: #1b1e33;
+  --panel2: #232741;
+  --border: #2e3357;
+  --text: #e6e8f5;
+  --muted: #9aa0c4;
+  --accent: #7c5cff;
+  --accent2: #b18aff;
+  --gold: #ffd23f;
+  --good: #8ac926;
+  --bad: #ff5470;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: radial-gradient(1200px 600px at 70% -10%, #21243f 0%, var(--bg) 60%);
+  color: var(--text);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+  min-height: 100vh;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  color: var(--muted);
+}
+
+/* 상단바 */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 24px;
+  background: rgba(20, 22, 40, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-wrap: wrap;
+}
+.brand {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.topbar-char {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 240px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.tb-name {
+  color: var(--text);
+  font-weight: 600;
+}
+.tb-lv {
+  color: var(--accent2);
+  font-weight: 700;
+}
+.tb-xp {
+  width: 90px;
+  height: 7px;
+  background: var(--panel2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.tb-xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+.tb-gold {
+  color: var(--gold);
+}
+.topnav {
+  display: flex;
+  gap: 6px;
+}
+.topnav a {
+  padding: 7px 14px;
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+.topnav a:hover {
+  background: var(--panel2);
+  color: var(--text);
+}
+.topnav a.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* 공통 패널/버튼 */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.panel-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+.btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn:hover {
+  filter: brightness(1.1);
+}
+.btn.ghost {
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn.danger {
+  color: var(--bad);
+}
+.btn.big {
+  width: 100%;
+  padding: 13px;
+  font-size: 15px;
+  margin-top: 14px;
+}
+.btn-sm {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-sm.ghost {
+  background: var(--panel2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.empty-hint {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.empty-big {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}
+
+/* 홈 레이아웃 */
+.home {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4px 0 14px;
+}
+.section-head h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+/* 캐릭터 패널 */
+.char-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.char-name {
+  margin: 0;
+  font-size: 20px;
+  cursor: pointer;
+}
+.edit-hint {
+  font-size: 13px;
+  color: var(--muted);
+  opacity: 0.6;
+}
+.char-lv {
+  color: var(--accent2);
+  font-weight: 800;
+  font-size: 18px;
+}
+.name-edit {
+  display: flex;
+  gap: 6px;
+}
+.name-edit input {
+  flex: 1;
+}
+.titles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.title-badge {
+  font-size: 11px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  border-radius: 20px;
+  color: var(--gold);
+}
+.xp-bar {
+  position: relative;
+  height: 20px;
+  background: var(--panel2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.4s;
+}
+.xp-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  background: var(--panel2);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.stat-label {
+  color: var(--muted);
+}
+.stat-val {
+  font-weight: 700;
+}
+.stat-bonus {
+  color: var(--good);
+  font-size: 11px;
+}
+.equip-slots {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.equip-slot {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+.slot-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+.slot-empty {
+  color: var(--muted);
+  opacity: 0.5;
+  font-size: 12px;
+}
+.char-foot {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  font-size: 13px;
+  color: var(--gold);
+}
+.account-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 인벤토리 */
+.inv-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.inv-item {
+  background: var(--panel2);
+  border-left: 3px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.inv-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.inv-name {
+  font-weight: 700;
+  font-size: 13px;
+}
+.inv-slot {
+  font-size: 11px;
+  color: var(--muted);
+}
+.inv-stats {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 4px 0;
+}
+.inv-compare {
+  font-size: 11px;
+  font-weight: 600;
+}
+.inv-compare.up {
+  color: var(--good);
+}
+.inv-compare.down {
+  color: var(--bad);
+}
+.inv-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+/* 던전 카드 목록 */
+.dungeon-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.dungeon-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  position: relative;
+}
+.dungeon-card.cleared {
+  opacity: 0.7;
+}
+.dc-rank {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 20px;
+  color: #10121f;
+  flex-shrink: 0;
+}
+.dc-body {
+  flex: 1;
+  min-width: 0;
+}
+.dc-name {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+  text-decoration: none;
+}
+.dc-name:hover {
+  color: var(--accent2);
+}
+.dc-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 4px 0 8px;
+}
+.dc-clear {
+  color: var(--good);
+  margin-left: 8px;
+}
+.dc-progress {
+  height: 6px;
+  background: var(--panel2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.dc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+.dc-del {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.5;
+}
+.dc-del:hover {
+  color: var(--bad);
+  opacity: 1;
+}
+
+/* 생성 페이지 */
+.create {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 20px;
+  align-items: start;
+}
+input,
+select {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 9px 11px;
+  font-size: 14px;
+  font-family: inherit;
+}
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.checklist-name {
+  width: 100%;
+  margin: 12px 0 16px;
+}
+.rows {
+  display: grid;
+  gap: 8px;
+}
+.row {
+  display: grid;
+  grid-template-columns: 24px 1fr 110px 90px 28px;
+  gap: 8px;
+  align-items: center;
+}
+.row-num {
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+}
+.row-del {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 15px;
+}
+.row-del:hover {
+  color: var(--bad);
+}
+.create-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* 미리보기 */
+.preview-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.preview-rank {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: #10121f;
+}
+.preview-name {
+  font-size: 18px;
+  font-weight: 800;
+}
+.preview-intro {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  font-style: italic;
+}
+.preview-quests {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+}
+.preview-quest {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  background: var(--panel2);
+  padding: 7px 11px;
+  border-radius: 7px;
+}
+.pq-reward {
+  color: var(--gold);
+  font-size: 12px;
+}
+.boss-tag {
+  background: var(--bad);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-left: 8px;
+  font-weight: 700;
+}
+
+/* 던전 진행 페이지 */
+.dungeon-page {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.back-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+}
+.dungeon-header {
+  margin-bottom: 20px;
+}
+.dh-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 12px 0 8px;
+}
+.dh-title h1 {
+  margin: 0;
+  font-size: 26px;
+}
+.dh-rank {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 22px;
+  color: #10121f;
+}
+.dh-intro {
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.5;
+}
+.dh-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.dh-progress {
+  flex: 1;
+  height: 10px;
+  background: var(--panel2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.dh-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.4s;
+}
+.dh-progress-text {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.quest-list {
+  display: grid;
+  gap: 12px;
+}
+.quest-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.quest-card.boss {
+  border-color: var(--bad);
+  background: linear-gradient(180deg, rgba(255, 84, 112, 0.08), var(--panel));
+}
+.quest-card.done {
+  opacity: 0.55;
+}
+.qc-icon {
+  font-size: 28px;
+  width: 44px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.qc-body {
+  flex: 1;
+  min-width: 0;
+}
+.qc-title {
+  font-weight: 700;
+  font-size: 15px;
+}
+.qc-flavor {
+  color: var(--muted);
+  font-size: 13px;
+  font-style: italic;
+  margin: 3px 0 8px;
+}
+.qc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.tag {
+  font-size: 11px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: var(--muted);
+}
+.qc-reward {
+  font-size: 12px;
+  color: var(--gold);
+}
+.qc-action {
+  flex-shrink: 0;
+}
+.qc-done-badge {
+  color: var(--good);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* 토스트 */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--panel2);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 220px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  z-index: 100;
+  animation: slidein 0.3s ease;
+}
+@keyframes slidein {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.toast-title {
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+.toast-line {
+  font-size: 13px;
+  color: var(--muted);
+}
+.toast-loot {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+  font-size: 13px;
+}
+
+/* 반응형 */
+@media (max-width: 860px) {
+  .home,
+  .create {
+    grid-template-columns: 1fr;
+  }
+  .topbar-char {
+    order: 3;
+    width: 100%;
+  }
+}
