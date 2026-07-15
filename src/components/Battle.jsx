@@ -12,6 +12,7 @@ export default function Battle({ player, quest, rankInfo, onWin, onClose }) {
   const [monsterHp, setMonsterHp] = useState(monster.maxHp)
   const [potions, setPotions] = useState(POTION_MAX)
   const [turn, setTurn] = useState(0)
+  const [salt, setSalt] = useState(() => Math.floor(Math.random() * 1e9)) // 전투마다 다른 난수
   const [log, setLog] = useState([`${monster.name}이(가) 나타났다!`])
   const [phase, setPhase] = useState('fighting') // fighting | won | lost
   const [busy, setBusy] = useState(false)
@@ -23,6 +24,7 @@ export default function Battle({ player, quest, rankInfo, onWin, onClose }) {
     setMonsterHp(monster.maxHp)
     setPotions(POTION_MAX)
     setTurn(0)
+    setSalt(Math.floor(Math.random() * 1e9))
     setLog([`${monster.name}에게 다시 도전한다!`])
     setPhase('fighting')
     setBusy(false)
@@ -32,7 +34,7 @@ export default function Battle({ player, quest, rankInfo, onWin, onClose }) {
   const monsterTurn = (curPlayerHp, defending) => {
     setBusy(true)
     setTimeout(() => {
-      const rng = makeRng(`${quest.id}|${turn}|m`)
+      const rng = makeRng(`${quest.id}|${salt}|${turn}|m`)
       const res = monsterStrike(monster, player, defending, rng)
       const pHp = curPlayerHp - res.damage
       pushLog(`👹 ${monster.name}의 반격 — 내 HP -${res.damage}`)
@@ -67,7 +69,7 @@ export default function Battle({ player, quest, rankInfo, onWin, onClose }) {
     }
 
     // attack | power
-    const rng = makeRng(`${quest.id}|${turn}|${type}`)
+    const rng = makeRng(`${quest.id}|${salt}|${turn}|${type}`)
     const res = playerStrike(player, monster, type, rng)
     if (res.miss) {
       pushLog('💨 강공격이 빗나갔다!')
@@ -88,7 +90,7 @@ export default function Battle({ player, quest, rankInfo, onWin, onClose }) {
   const mPct = Math.max(0, Math.round((monsterHp / monster.maxHp) * 100))
 
   return (
-    <div className="battle-overlay" onClick={(e) => e.target === e.currentTarget && phase !== 'fighting' && onClose()}>
+    <div className="battle-overlay" onClick={(e) => e.target === e.currentTarget && phase === 'lost' && onClose()}>
       <div className="battle">
         <div className="battle-head">
           <span className={`b-quest ${quest.isBoss ? 'boss' : ''}`}>
