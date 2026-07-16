@@ -5,15 +5,32 @@ export default function PaperDoll({ equipment, onUnequip }) {
   return (
     <div className="paperdoll">
       <svg className="doll-figure" viewBox="0 0 100 130" aria-hidden="true">
-        <g stroke="var(--doll)" strokeWidth="9" strokeLinecap="round" fill="none">
-          <line x1="30" y1="38" x2="70" y2="38" /> {/* 어깨 */}
-          <line x1="50" y1="30" x2="50" y2="72" /> {/* 몸통 */}
-          <line x1="32" y1="40" x2="17" y2="68" /> {/* 왼팔 */}
-          <line x1="68" y1="40" x2="83" y2="68" /> {/* 오른팔 */}
-          <line x1="45" y1="72" x2="39" y2="114" /> {/* 왼다리 */}
-          <line x1="55" y1="72" x2="61" y2="114" /> {/* 오른다리 */}
+        <defs>
+          <linearGradient id="dollBody" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#565f97" />
+            <stop offset="1" stopColor="#2b3157" />
+          </linearGradient>
+        </defs>
+        {/* 바닥 그림자 */}
+        <ellipse cx="50" cy="125" rx="23" ry="3.4" fill="rgba(0,0,0,0.35)" />
+        <g fill="url(#dollBody)">
+          {/* 다리 */}
+          <rect x="40.5" y="72" width="9" height="44" rx="4.5" />
+          <rect x="50.5" y="72" width="9" height="44" rx="4.5" />
+          <ellipse cx="45" cy="117" rx="6.2" ry="3.2" />
+          <ellipse cx="55" cy="117" rx="6.2" ry="3.2" />
+          {/* 팔 */}
+          <rect x="23" y="35" width="8" height="35" rx="4" transform="rotate(9 27 52)" />
+          <rect x="69" y="35" width="8" height="35" rx="4" transform="rotate(-9 73 52)" />
+          <circle cx="22" cy="70" r="4.6" />
+          <circle cx="78" cy="70" r="4.6" />
+          {/* 몸통 */}
+          <path d="M35 35 Q33.5 30 39 29 L61 29 Q66.5 30 65 35 L61 67 Q60 72 53.5 72 L46.5 72 Q40 72 39 67 Z" />
+          {/* 목 */}
+          <rect x="45.5" y="21" width="9" height="9" rx="3.5" />
+          {/* 머리 */}
+          <circle cx="50" cy="14.5" r="10.5" />
         </g>
-        <circle cx="50" cy="16" r="11" fill="var(--doll)" />
       </svg>
 
       {SLOT_KEYS.map((key) => {
