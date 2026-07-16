@@ -1,5 +1,5 @@
 // 턴기반 전투 오버레이 — 플레이어 vs 몬스터. 승리 시 onWin(보상), 패배 시 재도전/후퇴.
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { makeMonster, playerStrike, monsterStrike, POTION_HEAL, POTION_MAX } from '../lib/battle'
 import { makeRng } from '../lib/rng'
 import { CATEGORIES } from '../lib/content'
@@ -16,6 +16,9 @@ export default function Battle({ player, quest, rankInfo, onWin, onClose }) {
   const [log, setLog] = useState([`${monster.name}이(가) 나타났다!`])
   const [phase, setPhase] = useState('fighting') // fighting | won | lost
   const [busy, setBusy] = useState(false)
+  // 동기적 잠금 — 더블탭 시 한 턴에 두 번 행동/보상 중복을 막는다(busy state는 비동기라 부족).
+  const busyRef = useRef(false)
+  const claimedRef = useRef(false)
 
   const pushLog = (line) => setLog((l) => [...l.slice(-4), line])
 
@@ -28,6 +31,7 @@ export default function Battle({ player, quest, rankInfo, onWin, onClose }) {
     setLog([`${monster.name}에게 다시 도전한다!`])
     setPhase('fighting')
     setBusy(false)
+    busyRef.current = false
   }
 
   // 몬스터 반격 → 플레이어 HP 갱신, 사망 판정
@@ -45,14 +49,16 @@ export default function Battle({ player, quest, rankInfo, onWin, onClose }) {
       }
       setTurn((t) => t + 1)
       setBusy(false)
+      busyRef.current = false
     }, 500)
   }
 
   const act = (type) => {
-    if (busy || phase !== 'fighting') return
+    if (busyRef.current || phase !== 'fighting') return
+    if (type === 'potion' && potions <= 0) return
+    busyRef.current = true // 동기 잠금(다음 클릭 즉시 차단)
 
     if (type === 'potion') {
-      if (potions <= 0) return
       const heal = Math.round(player.maxHp * POTION_HEAL)
       const newHp = Math.min(player.maxHp, playerHp + heal)
       pushLog(`🧪 물약 사용 — HP +${newHp - playerHp}`)
@@ -162,6 +168,8 @@ export default function Battle({ player, quest, rankInfo, onWin, onClose }) {
             <button
               className="btn big"
               onClick={() => {
+                if (claimedRef.current) return
+                claimedRef.current = true
                 onWin()
                 onClose()
               }}
