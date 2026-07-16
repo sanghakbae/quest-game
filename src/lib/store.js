@@ -1,10 +1,11 @@
-// 게임 저장/불러오기 — 항상 localStorage에 백업하고, 로그인 상태면 Firestore에도 저장한다.
+// 게임 저장/불러오기 — 로컬(localStorage)과 클라우드(Firestore)를 분리 제공한다.
+// 안전 원칙: 클라우드는 "성공적으로 읽은 뒤"에만 쓴다(빈 상태로 덮어쓰기 방지).
 import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { db, isFirebaseConfigured } from '../firebase'
+import { db } from '../firebase'
 
 const LS_KEY = 'checklist-dungeon-save'
 
-function readLocal() {
+export function loadLocal() {
   try {
     const raw = localStorage.getItem(LS_KEY)
     return raw ? JSON.parse(raw) : null
@@ -13,29 +14,21 @@ function readLocal() {
   }
 }
 
-function writeLocal(data) {
+export function saveLocal(data) {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(data))
   } catch {
-    /* 용량 초과 등은 무시 */
+    /* 용량 초과 등 무시 */
   }
 }
 
-// 저장 문서: { character, dungeons: [scenario] }
-// 로그인 상태면 Firestore를 우선하되, 클라우드가 비었으면 로컬 백업으로 이관한다.
-export async function loadGame(uid) {
-  if (isFirebaseConfigured && uid) {
-    const snap = await getDoc(doc(db, 'users', uid, 'game', 'save'))
-    if (snap.exists()) return snap.data()
-    return readLocal() // 클라우드에 아직 없음 → 로컬 진행분 이어받기
-  }
-  return readLocal()
+// 클라우드 읽기. 실패 시 throw(호출부가 폴백 처리). 문서 없으면 null.
+export async function loadCloud(uid) {
+  const snap = await getDoc(doc(db, 'users', uid, 'game', 'save'))
+  return snap.exists() ? snap.data() : null
 }
 
-// 항상 로컬에 백업 저장 → 클라우드가 실패해도 데이터가 사라지지 않는다.
-export async function saveGame(uid, data) {
-  writeLocal(data)
-  if (isFirebaseConfigured && uid) {
-    await setDoc(doc(db, 'users', uid, 'game', 'save'), data, { merge: false })
-  }
+// 클라우드 쓰기. 실패 시 throw.
+export async function saveCloud(uid, data) {
+  await setDoc(doc(db, 'users', uid, 'game', 'save'), data, { merge: false })
 }

@@ -1,7 +1,8 @@
 // 게임 상태 전역 관리 — 캐릭터/던전 목록을 보관하고 저장소와 동기화한다.
-import { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { useAuth } from '../auth/AuthContext'
-import { loadGame, saveGame } from '../lib/store'
+import { loadLocal, saveLocal, loadCloud, saveCloud } from '../lib/store'
+import { isFirebaseConfigured } from '../firebase'
 import { newCharacter, completeQuest, clearDungeon, equipItem, sellItem } from '../lib/game'
 
 const GameContext = createContext(null)
@@ -14,32 +15,36 @@ export function GameProvider({ children }) {
   const [loaded, setLoaded] = useState(false)
   const [toast, setToast] = useState(null)
 
+  // 현재 메모리 상태가 "어느 uid의 로드 결과"인지 추적 → uid 전환 중 옛 상태로 저장하는 것 방지.
+  const loadedUidRef = useRef(undefined)
+  // 클라우드를 성공적으로 읽은 뒤에만 true → 빈/실패 상태로 클라우드를 덮어쓰는 것 방지.
+  const cloudReadyRef = useRef(false)
+
   // 저장소에서 로드 (uid 변경 시)
   useEffect(() => {
     let cancelled = false
     setLoaded(false)
+    cloudReadyRef.current = false
     // Firestore 읽기가 실패하거나(미설정/권한) 응답이 없어도 로딩이 멈추지 않도록 타임아웃을 건다.
     const withTimeout = (p, ms) =>
       Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))])
     ;(async () => {
       let data = null
-      try {
-        data = await withTimeout(loadGame(uid), 6000)
-        // 첫 로그인 시 클라우드가 비어있으면 로컬 저장분을 이어받는다(이후 저장 effect가 클라우드로 동기화).
-        if (!data?.character && uid) {
-          const local = await loadGame(null)
-          if (local?.character) data = local
-        }
-      } catch (e) {
-        // 클라우드 로드 실패/지연 → 로컬 저장분으로 폴백해 게임을 계속할 수 있게 한다.
-        console.warn('클라우드 로드 실패, 로컬 저장으로 폴백합니다.', e)
+      if (isFirebaseConfigured && uid) {
         try {
-          data = await loadGame(null)
-        } catch {
-          data = null
+          const cloud = await withTimeout(loadCloud(uid), 6000)
+          cloudReadyRef.current = true // 클라우드 읽기 성공 → 이후 클라우드 저장 허용
+          data = cloud || loadLocal() // 클라우드가 비어있으면 로컬 진행분 이어받기
+        } catch (e) {
+          // 클라우드 읽기 실패/지연 → 로컬로만 진행, 클라우드는 건드리지 않는다(덮어쓰기 방지).
+          console.warn('클라우드 로드 실패 → 로컬로 진행(클라우드 저장 보류).', e)
+          data = loadLocal()
         }
+      } else {
+        data = loadLocal()
       }
       if (cancelled) return
+      loadedUidRef.current = uid
       setCharacter(data?.character || newCharacter())
       setDungeons(data?.dungeons || [])
       setLoaded(true)
@@ -49,10 +54,14 @@ export function GameProvider({ children }) {
     }
   }, [uid])
 
-  // 변경 시 저장 (로드 완료 후에만)
+  // 변경 시 저장 — 로컬은 항상 백업, 클라우드는 "이 uid를 로드 완료 + 읽기 성공"일 때만.
   useEffect(() => {
     if (!loaded || !character) return
-    saveGame(uid, { character, dungeons }).catch(() => {})
+    if (loadedUidRef.current !== uid) return // 이 uid의 로드가 끝나기 전에는 저장 금지
+    saveLocal({ character, dungeons })
+    if (isFirebaseConfigured && uid && cloudReadyRef.current) {
+      saveCloud(uid, { character, dungeons }).catch(() => {})
+    }
   }, [character, dungeons, loaded, uid])
 
   const showToast = useCallback((t) => {
