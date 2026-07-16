@@ -1,6 +1,6 @@
 // 던전 진행 화면 — 퀘스트 카드를 나열하고, 도전 시 턴기반 전투를 연다.
-import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
 import { CATEGORIES } from '../lib/content'
 import { totalStats, rankInfoByName } from '../lib/game'
@@ -43,7 +43,16 @@ export default function Dungeon() {
   const { id } = useParams()
   const { dungeons, finishQuest, character } = useGame()
   const [battleQuest, setBattleQuest] = useState(null)
+  const navigate = useNavigate()
   const dungeon = dungeons.find((d) => d.id === id)
+
+  // 던전을 전부 클리어하면 잠시 뒤 자동으로 본거지로 이동한다.
+  const isCleared = dungeon?.status === 'cleared'
+  useEffect(() => {
+    if (!isCleared) return
+    const t = setTimeout(() => navigate('/'), 1600)
+    return () => clearTimeout(t)
+  }, [isCleared, navigate])
 
   if (!dungeon) {
     return (
