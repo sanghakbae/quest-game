@@ -736,7 +736,11 @@ select:focus {
 @media (max-width: 860px) {
   .home,
   .create {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .create-form,
+  .create-preview {
+    min-width: 0;
   }
   .topbar-char {
     order: 3;
@@ -973,6 +977,18 @@ body {
 
   .content {
     padding: 16px 14px calc(28px + env(safe-area-inset-bottom));
+  }
+
+  /* 체크리스트 행: 고정폭 컬럼이 화면을 넘겨 잘리던 문제 → 유동 컬럼(min 0)으로 축소 */
+  .row {
+    grid-template-columns: 16px minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.95fr) 22px;
+    gap: 5px;
+  }
+  .row-title,
+  .row select {
+    min-width: 0;
+    padding-left: 8px;
+    padding-right: 4px;
   }
 
   /* 상단바: 간결하게 */
