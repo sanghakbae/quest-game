@@ -113,7 +113,7 @@ body {
 .content {
   width: 100%;
   margin: 0 auto;
-  padding: 20px clamp(12px, 2.2vw, 28px);
+  padding: 18px 12px;
 }
 
 /* 공통 패널/버튼 */
