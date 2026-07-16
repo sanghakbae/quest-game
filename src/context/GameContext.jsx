@@ -3,7 +3,15 @@ import { createContext, useContext, useEffect, useRef, useState, useCallback, us
 import { useAuth } from '../auth/AuthContext'
 import { loadLocal, saveLocal, loadCloud, saveCloud } from '../lib/store'
 import { isFirebaseConfigured } from '../firebase'
-import { newCharacter, completeQuest, clearDungeon, equipItem, sellItem } from '../lib/game'
+import {
+  newCharacter,
+  normalizeCharacter,
+  completeQuest,
+  clearDungeon,
+  equipItem,
+  unequipItem,
+  sellItem,
+} from '../lib/game'
 
 const GameContext = createContext(null)
 
@@ -45,7 +53,7 @@ export function GameProvider({ children }) {
       }
       if (cancelled) return
       loadedUidRef.current = uid
-      setCharacter(data?.character || newCharacter())
+      setCharacter(data?.character ? normalizeCharacter(data.character) : newCharacter())
       setDungeons(data?.dungeons || [])
       setLoaded(true)
     })()
@@ -146,6 +154,14 @@ export function GameProvider({ children }) {
     [character, showToast]
   )
 
+  const unequip = useCallback(
+    (slot) => {
+      if (!character) return
+      setCharacter(unequipItem(character, slot))
+    },
+    [character]
+  )
+
   const renameCharacter = useCallback((name) => {
     setCharacter((c) => ({ ...c, name: name.trim() || c.name }))
   }, [])
@@ -167,6 +183,7 @@ export function GameProvider({ children }) {
       deleteDungeon,
       finishQuest,
       equip,
+      unequip,
       sell,
       renameCharacter,
       resetGame,
@@ -181,6 +198,7 @@ export function GameProvider({ children }) {
       deleteDungeon,
       finishQuest,
       equip,
+      unequip,
       sell,
       renameCharacter,
       resetGame,

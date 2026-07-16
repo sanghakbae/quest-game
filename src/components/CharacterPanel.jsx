@@ -2,10 +2,10 @@
 import { useState } from 'react'
 import { useGame } from '../context/GameContext'
 import { totalStats, equipBonus, xpToNext } from '../lib/game'
-import { SLOT_LABELS } from '../lib/content'
+import PaperDoll from './PaperDoll'
 
 export default function CharacterPanel() {
-  const { character, renameCharacter } = useGame()
+  const { character, renameCharacter, unequip } = useGame()
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(character.name)
 
@@ -77,23 +77,8 @@ export default function CharacterPanel() {
         <StatRow icon="🍀" label="행운" base={character.baseLuck} add={bonus.luck} />
       </div>
 
-      <div className="equip-slots">
-        {Object.keys(SLOT_LABELS).map((slot) => {
-          const it = character.equipment[slot]
-          return (
-            <div key={slot} className="equip-slot" style={it ? { borderColor: it.rarityColor } : undefined}>
-              <div className="slot-label">{SLOT_LABELS[slot]}</div>
-              {it ? (
-                <div className="slot-item" style={{ color: it.rarityColor }}>
-                  {it.icon} {it.name}
-                </div>
-              ) : (
-                <div className="slot-empty">비어 있음</div>
-              )}
-            </div>
-          )
-        })}
-      </div>
+      <PaperDoll equipment={character.equipment} onUnequip={unequip} />
+      <p className="doll-hint">부위를 눌러 장착 해제 · 인벤토리에서 장착</p>
 
       <div className="char-foot">
         <span>💰 {character.gold} G</span>

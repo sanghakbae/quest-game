@@ -1,6 +1,11 @@
 // 캐릭터 성장 규칙 — 경험치/레벨업/스탯/장비 착용/전리품 반영.
-import { RANKS, TITLES, LOOT } from './content'
+import { RANKS, TITLES, SLOT_KEYS } from './content'
 import { rollLoot } from './generator'
+
+// 모든 슬롯을 null로 채운 빈 장비 객체
+export function emptyEquipment() {
+  return Object.fromEntries(SLOT_KEYS.map((k) => [k, null]))
+}
 
 export function rankInfoByName(name) {
   return RANKS.find((r) => r.rank === name) || RANKS[RANKS.length - 1]
@@ -23,11 +28,37 @@ export function newCharacter(name = '이름 없는 모험가') {
     baseLuck: 3,
     gold: 0,
     statPoints: 0,
-    equipment: { weapon: null, armor: null, accessory: null },
+    equipment: emptyEquipment(),
     inventory: [],
     cleared: 0,
     titles: [],
   }
+}
+
+// 저장 데이터 마이그레이션 — 새 슬롯 체계로 정규화.
+// 없는 슬롯은 null로 채우고, 더 이상 없는 슬롯('accessory' 등)의 아이템은 인벤토리로 되돌린다.
+const LEGACY_SLOT_MAP = { accessory: 'ring' } // 구버전 슬롯 → 새 슬롯
+
+function remapItem(item) {
+  const mapped = LEGACY_SLOT_MAP[item.slot]
+  return mapped ? { ...item, slot: mapped } : item
+}
+
+export function normalizeCharacter(char) {
+  if (!char) return char
+  const equipment = emptyEquipment()
+  const inventory = (char.inventory || []).map(remapItem)
+  const old = char.equipment || {}
+  for (const key of Object.keys(old)) {
+    if (!old[key]) continue
+    const item = remapItem(old[key])
+    if (SLOT_KEYS.includes(item.slot) && equipment[item.slot] === null) {
+      equipment[item.slot] = item
+    } else {
+      inventory.push(item) // 슬롯이 이미 찼거나 알 수 없으면 인벤토리로 회수
+    }
+  }
+  return { ...char, equipment, inventory }
 }
 
 // 장비 보너스 합산
@@ -118,6 +149,17 @@ export function equipItem(char, item) {
   return { ...char, equipment: { ...char.equipment, [slot]: item }, inventory: newInv }
 }
 
+// 장비 해제 — 착용 중인 아이템을 인벤토리로 되돌린다.
+export function unequipItem(char, slot) {
+  const item = char.equipment[slot]
+  if (!item) return char
+  return {
+    ...char,
+    equipment: { ...char.equipment, [slot]: null },
+    inventory: [...char.inventory, item],
+  }
+}
+
 // 아이템 판매 (골드 획득, 인벤토리에서 제거)
 export function sellItem(char, item) {
   const price = Math.max(5, Math.round((item.atk + item.def + item.hp + item.luck) * 2))
@@ -126,5 +168,3 @@ export function sellItem(char, item) {
   const newInv = [...char.inventory.slice(0, idx), ...char.inventory.slice(idx + 1)]
   return { char: { ...char, inventory: newInv, gold: char.gold + price }, price }
 }
-
-export { LOOT }

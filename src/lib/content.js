@@ -102,25 +102,75 @@ export const RARITIES = [
   { name: '전설', color: '#ff5470', mult: 4.5, weight: 2 },
 ]
 
-// 장비 슬롯별 아이템 이름 풀과 스탯 성향
-export const LOOT = {
+// 장비 슬롯 정의 — 라벨/아이콘/이름 풀/스탯 성향/종이인형 위치(%).
+// pos: 캐릭터 종이인형 위에 아이템 아이콘을 놓을 좌표(left%, top%).
+export const SLOTS = {
   weapon: {
-    icon: '🗡️',
-    names: ['녹슨 검', '강철 장검', '화염 도끼', '용살자의 창', '서리 대검', '천둥 망치', '그림자 단검', '성스러운 클레이모어'],
+    label: '무기',
+    icon: '⚔️',
+    pos: { left: 87, top: 55 },
+    names: ['단검', '장검', '대검', '전투도끼', '둔기', '철퇴', '장창', '장궁', '단궁', '마법 지팡이', '언월도'],
     stats: { atk: 1.0, def: 0.1, hp: 0.2, luck: 0.1 },
   },
+  offhand: {
+    label: '보조',
+    icon: '🗡️',
+    pos: { left: 13, top: 55 },
+    names: ['보조 단검', '목제 방패', '철제 방패', '버클러', '쿠크리', '단검', '마법서'],
+    stats: { atk: 0.6, def: 0.5, hp: 0.2, luck: 0.1 },
+  },
   armor: {
+    label: '갑옷',
     icon: '🛡️',
-    names: ['가죽 갑옷', '사슬 갑옷', '판금 흉갑', '용비늘 갑주', '수호자의 방패', '마법 로브', '거인의 판금', '불멸의 성갑'],
+    pos: { left: 62, top: 40 },
+    names: ['천갑옷', '가죽갑옷', '사슬갑옷', '비늘갑옷', '철갑옷', '판금갑옷'],
     stats: { atk: 0.1, def: 1.0, hp: 0.6, luck: 0.1 },
   },
-  accessory: {
+  top: {
+    label: '상의',
+    icon: '👕',
+    pos: { left: 38, top: 40 },
+    names: ['반팔 셔츠', '긴팔 셔츠', '튜닉', '조끼', '리넨 상의'],
+    stats: { atk: 0.1, def: 0.5, hp: 0.5, luck: 0.2 },
+  },
+  bottom: {
+    label: '하의',
+    icon: '👖',
+    pos: { left: 50, top: 72 },
+    names: ['반바지', '긴바지', '가죽 바지', '천 바지', '판금 각반'],
+    stats: { atk: 0.1, def: 0.5, hp: 0.4, luck: 0.2 },
+  },
+  inner: {
+    label: '속내의',
+    icon: '🩲',
+    pos: { left: 50, top: 29 },
+    names: ['속내의', '기본 내의', '비단 속옷', '보온 내의'],
+    stats: { atk: 0.05, def: 0.3, hp: 0.3, luck: 0.3 },
+  },
+  earring: {
+    label: '귀걸이',
+    icon: '💠',
+    pos: { left: 62, top: 12 },
+    names: ['구리 귀걸이', '은 귀걸이', '금 귀걸이', '보석 귀걸이', '룬 귀걸이'],
+    stats: { atk: 0.2, def: 0.2, hp: 0.2, luck: 0.8 },
+  },
+  ring: {
+    label: '반지',
     icon: '💍',
-    names: ['구리 반지', '행운의 부적', '현자의 목걸이', '용의 눈 보석', '수호 룬석', '별빛 팔찌', '왕의 인장', '영원의 성물'],
-    stats: { atk: 0.3, def: 0.3, hp: 0.3, luck: 1.0 },
+    pos: { left: 80, top: 67 },
+    names: ['구리 반지', '은 반지', '금 반지', '마력의 반지', '용의 인장'],
+    stats: { atk: 0.4, def: 0.2, hp: 0.2, luck: 0.6 },
+  },
+  bracelet: {
+    label: '팔찌',
+    icon: '📿',
+    pos: { left: 20, top: 41 },
+    names: ['가죽 팔찌', '은 팔찌', '금 팔찌', '룬 팔찌', '수호의 팔찌'],
+    stats: { atk: 0.3, def: 0.3, hp: 0.3, luck: 0.6 },
   },
 }
-export const SLOT_LABELS = { weapon: '무기', armor: '방어구', accessory: '장신구' }
+export const SLOT_KEYS = Object.keys(SLOTS)
+export const SLOT_LABELS = Object.fromEntries(SLOT_KEYS.map((k) => [k, SLOTS[k].label]))
 
 // 던전 클리어 시 부여 가능한 칭호 (누적 클리어 수 기준)
 export const TITLES = [

@@ -12,6 +12,7 @@
   --gold: #ffd23f;
   --good: #8ac926;
   --bad: #ff5470;
+  --doll: #3d4470;
 }
 
 * {
@@ -1076,4 +1077,66 @@ body {
     font-size: 38px;
     width: 48px;
   }
+}
+
+/* 캐릭터 종이인형 (사람 모양 + 부위별 장착 아이템) */
+.paperdoll {
+  position: relative;
+  width: 100%;
+  max-width: 250px;
+  aspect-ratio: 100 / 132;
+  margin: 6px auto 2px;
+}
+.doll-figure {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.doll-slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 15%;
+  min-width: 40px;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  background: var(--panel2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.doll-slot.empty {
+  opacity: 0.55;
+  border-style: dashed;
+  cursor: default;
+  box-shadow: none;
+}
+.doll-slot.filled {
+  border-width: 2px;
+}
+.doll-slot.filled:hover {
+  filter: brightness(1.15);
+}
+.doll-icon {
+  font-size: 17px;
+  line-height: 1;
+}
+.doll-label {
+  font-size: 8px;
+  color: var(--muted);
+  line-height: 1;
+  white-space: nowrap;
+}
+.doll-hint {
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0 0 12px;
+  opacity: 0.7;
 }

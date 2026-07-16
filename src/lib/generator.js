@@ -8,7 +8,8 @@ import {
   THEME_NAMES,
   RANKS,
   RARITIES,
-  LOOT,
+  SLOTS,
+  SLOT_KEYS,
 } from './content'
 
 // 총 가중치로 던전 랭크 결정
@@ -170,10 +171,10 @@ export function rollLoot(quest, rankInfo, luck = 0) {
     }
   }
 
-  const slot = rng.pick(['weapon', 'armor', 'accessory'])
-  const def = LOOT[slot]
+  const slot = rng.pick(SLOT_KEYS)
+  const def = SLOTS[slot]
   const tier = rankInfo.tier
-  const nameIdx = Math.min(def.names.length - 1, tier + rng.int(0, 1))
+  const typeName = rng.pick(def.names) // 종류는 무작위(다양성), 강함은 티어×희귀도로 표현
   const base = 3 + tier * 2
   const power = base * rarity.mult
 
@@ -181,7 +182,7 @@ export function rollLoot(quest, rankInfo, luck = 0) {
 
   return {
     id: `it_${quest.id}_${rarity.name}`,
-    name: `${rarity.name} ${def.names[nameIdx]}`,
+    name: `${rarity.name} ${typeName}`,
     slot,
     icon: def.icon,
     rarity: rarity.name,
