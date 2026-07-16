@@ -113,7 +113,7 @@ body {
 .content {
   width: 100%;
   margin: 0 auto;
-  padding: 24px clamp(16px, 4vw, 56px);
+  padding: 20px clamp(12px, 2.2vw, 28px);
 }
 
 /* 공통 패널/버튼 */
@@ -381,6 +381,7 @@ body {
 /* 던전 카드 목록 */
 .dungeon-list {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 12px;
   margin-bottom: 24px;
 }
